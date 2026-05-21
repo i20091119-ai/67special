@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 가족과 함께하는 SW체험교실 — 마커로 움직이는 이족보행로봇</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%23ffd84d'/%3E%3Cpath fill='%23141110' d='M0 0h8v1H0zM0 7h8v1H0zM0 0h1v8H0zM7 0h1v8H7zM2 2h1v1H2zM3 3h1v1H3zM4 2h1v1H4zM5 4h1v1H5zM2 5h1v1H2zM4 5h1v1H4z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=DotGothic16&family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root {
+    --bg: #fdfaf0;
+    --bg-grid: #f5efdc;
+    --surface: #ffffff;
+    --ink: #14110f;
+    --ink-soft: #44403a;
+    --line: #14110f;
+    --line-w: 3px;
+    --shadow: 6px 6px 0 var(--line);
+    --shadow-sm: 3px 3px 0 var(--line);
+    --shadow-lg: 10px 10px 0 var(--line);
+    --yellow: #ffd84d;
+    --coral: #ff6b6b;
+    --blue: #4d96ff;
+    --mint: #4dffaa;
+    --pink: #ffb3d6;
+    --display: 'Black Han Sans', 'Pretendard', system-ui, sans-serif;
+    --display-soft: 'Jua', 'Pretendard', system-ui, sans-serif;
+    --body: 'Pretendard', system-ui, sans-serif;
+    --pixel: 'DotGothic16', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--body);
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    padding: 24px 24px 80px;
+  }
+
+  .container { max-width: 1280px; margin: 0 auto; }
+
+  /* === HEADER === */
+  header {
+    background: var(--surface);
+    border: var(--line-w) solid var(--line);
+    box-shadow: var(--shadow-lg);
+    padding: 28px 36px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 32px;
+    align-items: center;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -12px; left: -12px;
+    width: 28px; height: 28px;
+    background: var(--yellow);
+    border: var(--line-w) solid var(--line);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -12px; right: -12px;
+    width: 28px; height: 28px;
+    background: var(--coral);
+    border: var(--line-w) solid var(--line);
+  }
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    border-right: 2px dashed var(--ink);
+    padding-right: 32px;
+  }
+  .logo-wrap img {
+    height: 64px;
+    width: auto;
+    display: block;
+  }
+  .titles .badge {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 4px 12px;
+    font-family: var(--pixel);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .titles h1 {
+    font-family: var(--display);
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .titles h1 em {
+    font-style: normal;
+    background: linear-gradient(transparent 60%, var(--yellow) 60%);
+    padding: 0 2px;
+  }
+  .titles .sub {
+    font-family: var(--display-soft);
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* === TABS === */
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .tab {
+    background: var(--surface);
+    border: var(--line-w) solid var(--line);
+    padding: 22px 24px;
+    cursor: pointer;
+    font-family: var(--display);
+    font-size: 22px;
+    text-align: left;
+    color: var(--ink);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    box-shadow: var(--shadow);
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 16px;
+    align-items: center;
+  }
+  .tab:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lg); }
+  .tab:active { transform: translate(2px, 2px); box-shadow: var(--shadow-sm); }
+  .tab[aria-selected="true"] { background: var(--yellow); }
+  .tab[aria-selected="true"] .tab-num { background: var(--ink); color: var(--yellow); }
+  .tab-num {
+    width: 56px; height: 56px;
+    background: var(--bg);
+    border: var(--line-w) solid var(--line);
+    display: grid;
+    place-items: center;
+    font-family: var(--pixel);
+    font-size: 28px;
+  }
+  .tab-text .tab-label {
+    display: block;
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .tab[aria-selected="true"] .tab-label { color: var(--ink); }
+
+  /* === PANELS === */
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card {
+    background: var(--surface);
+    border: var(--line-w) solid var(--line);
+    box-shadow: var(--shadow-lg);
+    padding: 32px;
+  }
+
+  /* MAKE PANEL LAYOUT */
+  .make-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .make-grid { grid-template-columns: 1fr; }
+    .titles h1 { font-size: 22px; }
+    .logo-wrap { border-right: none; border-bottom: 2px dashed var(--ink); padding-right: 0; padding-bottom: 16px; }
+    header { grid-template-columns: 1fr; }
+  }
+  .step {
+    margin-bottom: 24px;
+  }
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: var(--pixel);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+  }
+  .step-head h3 {
+    font-family: var(--display);
+    font-size: 22px;
+  }
+  .id-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .id-input {
+    flex: 1;
+    border: var(--line-w) solid var(--line);
+    padding: 14px 16px;
+    font-family: var(--pixel);
+    font-size: 32px;
+    text-align: center;
+    background: var(--bg);
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+    transition: background 0.12s;
+  }
+  .id-input:focus { background: var(--mint); }
+  .btn-make {
+    background: var(--coral);
+    border: var(--line-w) solid var(--line);
+    padding: 0 22px;
+    font-family: var(--display);
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.1s, box-shadow 0.1s;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .btn-make:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow); }
+  .btn-make:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--line); }
+  .id-hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-family: var(--body);
+    margin-top: 4px;
+  }
+  .quick-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .chip {
+    padding: 4px 10px;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    font-family: var(--pixel);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .chip:hover { background: var(--mint); }
+
+  .tip-box {
+    background: var(--bg);
+    border: 2px dashed var(--ink);
+    padding: 14px 16px;
+    margin-top: 16px;
+  }
+  .tip-box .tip-title {
+    font-family: var(--display-soft);
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .tip-box ul {
+    list-style: none;
+    padding: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+  .tip-box ul li::before { content: '✦ '; color: var(--coral); }
+
+  /* MARKER DISPLAY */
+  .marker-stage {
+    background: var(--bg);
+    border: var(--line-w) solid var(--line);
+    padding: 32px;
+    display: grid;
+    place-items: center;
+    min-height: 480px;
+    position: relative;
+  }
+  .marker-stage::before {
+    content: 'SIGNAL';
+    position: absolute;
+    top: 12px; left: 16px;
+    font-family: var(--pixel);
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+  }
+  .marker-stage .id-tag {
+    position: absolute;
+    top: 12px; right: 16px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: var(--pixel);
+    padding: 4px 12px;
+    font-size: 16px;
+  }
+  .marker-svg-wrap {
+    background: white;
+    padding: 18px;
+    border: 2px solid var(--ink);
+    box-shadow: var(--shadow);
+  }
+  .marker-svg-wrap svg {
+    display: block;
+    width: 360px;
+    height: 360px;
+  }
+  .marker-empty {
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: var(--display-soft);
+    font-size: 18px;
+  }
+  .marker-empty .pixel-arrow {
+    font-family: var(--pixel);
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .legend .swatch {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid var(--ink);
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .legend .sw-black { background: var(--ink); }
+  .legend .sw-white { background: white; }
+
+  /* DETECT PANEL */
+  .detect-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .detect-grid { grid-template-columns: 1fr; }
+  }
+  .video-wrap {
+    background: var(--ink);
+    border: var(--line-w) solid var(--line);
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+  }
+  .video-wrap video, .video-wrap canvas {
+    display: block;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+  }
+  .video-wrap canvas { position: absolute; top: 0; left: 0; }
+  .video-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--display);
+    font-size: 24px;
+    padding: 24px;
+    text-align: center;
+  }
+  .video-overlay.hidden { display: none; }
+  .btn-cam {
+    background: var(--mint);
+    border: var(--line-w) solid var(--line);
+    padding: 16px 28px;
+    font-family: var(--display);
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    margin-top: 24px;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-cam:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lg); }
+  .btn-cam:active { transform: translate(2px, 2px); box-shadow: var(--shadow-sm); }
+  .btn-cam[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .result-card {
+    background: var(--bg);
+    border: var(--line-w) solid var(--line);
+    padding: 28px;
+    text-align: center;
+  }
+  .result-card .label {
+    font-family: var(--display-soft);
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .result-id {
+    background: var(--ink);
+    color: var(--mint);
+    border: var(--line-w) solid var(--line);
+    padding: 24px 12px;
+    font-family: var(--pixel);
+    font-size: 96px;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    transition: background 0.2s, color 0.2s;
+  }
+  .result-id.detected {
+    background: var(--mint);
+    color: var(--ink);
+    animation: pop 0.4s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  .result-status {
+    margin-top: 14px;
+    font-family: var(--display-soft);
+    font-size: 15px;
+    color: var(--ink-soft);
+    min-height: 22px;
+  }
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 2px solid var(--ink);
+    padding: 10px 12px;
+    text-align: left;
+  }
+  .stat .stat-label {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-family: var(--body);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .stat .stat-val {
+    font-family: var(--pixel);
+    font-size: 20px;
+    color: var(--ink);
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-family: var(--body);
+  }
+  footer .pixel { font-family: var(--pixel); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo-wrap">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ffd84d'/%3E%3Ctext x='32' y='40' font-family='sans-serif' font-size='24' font-weight='bold' text-anchor='middle' fill='%2314110f'%3EGNMC%3C/text%3E%3C/svg%3E" alt="경상남도교육청 경남수학문화관">
+    </div>
+    <div class="titles">
+      <span class="badge">2026 · GNMC</span>
+      <h1>가족과 함께하는 <em>SW체험교실</em></h1>
+      <div class="sub">코드와 춤이 만나는 곳, 마커로 움직이는 이족보행로봇</div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="panel-make" id="tab-make" data-tab="make">
+      <span class="tab-num">01</span>
+      <span class="tab-text">
+        <span class="tab-label">activity 1</span>
+        시그널 만들기
+      </span>
+    </button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-detect" id="tab-detect" data-tab="detect">
+      <span class="tab-num">02</span>
+      <span class="tab-text">
+        <span class="tab-label">activity 2</span>
+        시그널 읽기
+      </span>
+    </button>
+  </nav>
+
+  <!-- MAKE PANEL -->
+  <section class="panel active" id="panel-make" role="tabpanel" aria-labelledby="tab-make">
+    <div class="card">
+      <div class="make-grid">
+        <div class="make-controls">
+          <div class="step">
+            <div class="step-head">
+              <div class="step-num">1</div>
+              <h3>우리 가족 ID 정하기</h3>
+            </div>
+            <div class="id-input-row">
+              <input type="number" class="id-input" id="idInput" min="0" max="249" value="42" inputmode="numeric">
+              <button class="btn-make" id="btnMake">만들기</button>
+            </div>
+            <div class="id-hint">0부터 249까지 자유롭게 입력하세요. 6×6 마커를 사용합니다.</div>
+            <div class="quick-row">
+              <button class="chip" data-id="7">7</button>
+              <button class="chip" data-id="42">42</button>
+              <button class="chip" data-id="100">100</button>
+              <button class="chip" data-id="150">150</button>
+              <button class="chip" data-id="200">200</button>
+              <button class="chip" data-id="249">249</button>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-head">
+              <div class="step-num">2</div>
+              <h3>보안카드에 따라 그리기</h3>
+            </div>
+            <div class="tip-box">
+              <div class="tip-title">그릴 때 꼭 지킬 것</div>
+              <ul>
+                <li>검정 칸은 빈틈 없이 진하게 칠하세요</li>
+                <li>흰 칸은 절대 칠하지 마세요</li>
+                <li>외곽 검정 테두리도 빠뜨리면 안 돼요</li>
+                <li>마커 바깥쪽엔 흰 여백을 충분히 두세요</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="marker-stage">
+          <div class="id-tag" id="idTag">ID 42</div>
+          <div class="marker-svg-wrap" id="markerWrap">
+            <svg viewBox="0 0 8 8" id="markerSvg" shape-rendering="crispEdges"></svg>
+          </div>
+          <div class="legend">
+            <div><span class="swatch sw-black"></span>검정 칸</div>
+            <div><span class="swatch sw-white"></span>흰 칸</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETECT PANEL -->
+  <section class="panel" id="panel-detect" role="tabpanel" aria-labelledby="tab-detect">
+    <div class="card">
+      <div class="detect-grid">
+        <div>
+          <div class="video-wrap">
+            <video id="video" playsinline autoplay muted></video>
+            <canvas id="overlay"></canvas>
+            <div class="video-overlay" id="videoOverlay">
+              카메라를 켜고<br>그린 보안카드를<br>화면에 비춰보세요
+            </div>
+          </div>
+          <button class="btn-cam" id="btnCam">📷 카메라 시작</button>
+        </div>
+        <div>
+          <div class="result-card">
+            <div class="label">인식된 ID</div>
+            <div class="result-id" id="resultId">--</div>
+            <div class="result-status" id="resultStatus">대기 중</div>
+            <div class="stat-row">
+              <div class="stat">
+                <div class="stat-label">FPS</div>
+                <div class="stat-val" id="statFps">0</div>
+              </div>
+              <div class="stat">
+                <div class="stat-label">감지된 마커</div>
+                <div class="stat-val" id="statCount">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="tip-box" style="margin-top: 18px;">
+            <div class="tip-title">잘 인식되지 않을 때</div>
+            <ul>
+              <li>카드 주변에 흰 여백이 충분한지 확인하세요</li>
+              <li>밝은 곳에서, 카메라와 너무 가깝지 않게</li>
+              <li>구겨지지 않은 평평한 상태로 비추세요</li>
+              <li>검정 칸이 옅게 칠해졌는지 다시 확인</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="pixel">[GNMC] 2026 · 경상남도교육청 경남수학문화관 · 가족과 함께하는 SW체험교실</span>
+  </footer>
+</div>
+
+<script src="cv.js"></script>
+<script src="aruco.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
