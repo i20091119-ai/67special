@@ -321,11 +321,14 @@
     padding: 18px;
     border: 2px solid var(--ink);
     box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 396px;
   }
   .marker-svg-wrap svg {
     display: block;
-    width: 360px;
-    height: 360px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
   }
   .marker-empty {
     text-align: center;
@@ -483,6 +486,66 @@
     font-family: var(--body);
   }
   footer .pixel { font-family: var(--pixel); }
+
+  /* === MOBILE RESPONSIVE === */
+  @media (max-width: 900px) {
+    body { padding: 16px 16px 60px; }
+    header { padding: 20px 22px; gap: 20px; }
+    .card { padding: 22px; }
+    .marker-stage { padding: 24px 18px; min-height: 0; }
+    .titles h1 { font-size: 22px; }
+    .titles .sub { font-size: 15px; }
+  }
+  @media (max-width: 600px) {
+    body { padding: 12px 12px 48px; background-size: 20px 20px; }
+    header {
+      padding: 18px;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    header::before, header::after { width: 18px; height: 18px; top: -8px; left: -8px; }
+    header::after { top: auto; left: auto; bottom: -8px; right: -8px; }
+    .logo-wrap img { height: 48px; max-width: 100%; }
+    .titles h1 { font-size: 19px; }
+    .titles h1 small { display: block; margin-top: 2px; font-size: 0.7em !important; }
+    .titles .sub { font-size: 13px; }
+    .titles .badge { font-size: 12px; padding: 3px 9px; }
+
+    .tabs { gap: 10px; margin-bottom: 20px; }
+    .tab { padding: 14px; gap: 12px; grid-template-columns: 40px 1fr; font-size: 17px; }
+    .tab-num { width: 40px; height: 40px; font-size: 20px; }
+    .tab-text .tab-label { font-size: 11px; }
+
+    .card { padding: 16px; }
+    .step-head h3 { font-size: 18px; }
+    .step-num { width: 28px; height: 28px; font-size: 15px; }
+    .id-input { font-size: 26px; padding: 12px 14px; }
+    .btn-make { font-size: 16px; padding: 0 18px; }
+    .id-hint { font-size: 12px; }
+
+    .marker-stage { padding: 36px 14px 18px; }
+    .marker-stage::before, .marker-stage .id-tag { font-size: 11px; top: 8px; }
+    .marker-stage::before { left: 10px; letter-spacing: 0.15em; }
+    .marker-stage .id-tag { right: 10px; padding: 3px 8px; }
+    .marker-svg-wrap { padding: 12px; }
+    .legend { font-size: 12px; gap: 14px; }
+
+    .video-overlay { font-size: 18px; padding: 16px; }
+    .btn-cam { font-size: 18px; padding: 14px 22px; margin-top: 16px; width: 100%; }
+    .result-card { padding: 18px; }
+    .result-id { font-size: 64px; padding: 18px 8px; }
+    .stat .stat-val { font-size: 16px; }
+    .tip-box { padding: 12px 14px; }
+    .tip-box ul { font-size: 13px; }
+
+    footer { font-size: 11px; margin-top: 28px; }
+  }
+  @media (max-width: 380px) {
+    .titles h1 { font-size: 17px; }
+    .id-input { font-size: 22px; }
+    .result-id { font-size: 52px; }
+    .tab { font-size: 15px; padding: 12px; }
+  }
 </style>
 </head>
 <body>
