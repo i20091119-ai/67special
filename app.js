@@ -25,9 +25,9 @@
   });
 
   // ============================================================
-  // MARKER GENERATION (6x6 ArUco MIP 36h12 dictionary)
+  // MARKER GENERATION (6x6 ArUco dictionary, OpenCV DICT_6X6_1000)
   // ============================================================
-  const DICT_NAME = 'ARUCO_MIP_36h12';
+  const DICT_NAME = 'ARUCO_6X6_1000';
   const dict = AR.DICTIONARIES[DICT_NAME]; // { nBits: 36, codeList: [...] }
   const N_BITS = dict.nBits;               // 36
   const SIDE = Math.sqrt(N_BITS);          // 6
